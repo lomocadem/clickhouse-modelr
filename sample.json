@@ -1,0 +1,67 @@
+{
+  "$id": "https://example.com/person.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "UInt8",
+      "is_primary_key": true,
+      "is_partition_key": false,
+      "is_sorting_key": false,
+      "is_sample_key": false,
+      "is_nullable": false
+    },
+    "first_name": {
+      "type": "String",
+      "is_primary_key": false,
+      "is_partition_key": false,
+      "is_sorting_key": true,
+      "is_sample_key": false,
+      "is_nullable": false
+    },
+    "last_name": {
+      "type": "String",
+      "is_primary_key": false,
+      "is_partition_key": false,
+      "is_sorting_key": false,
+      "is_sample_key": false,
+      "is_nullable": false
+    },
+    "department": {
+      "type": "String",
+      "is_primary_key": false,
+      "is_partition_key": false,
+      "is_sorting_key": true,
+      "is_sample_key": false,
+      "is_nullable": false,
+      "function": "xxHash64"
+    },
+    "create_date": {
+      "type": "DateTime",
+      "time_zone": "Europe/Moscow",
+      "is_primary_key": false,
+      "is_partition_key": true,
+      "is_sorting_key": false,
+      "is_sample_key": false,
+      "is_nullable": false,
+      "compression_codec": "DoubleDelta",
+      "function": "toYYYYMM"
+    },
+    "salary": {
+      "type": "Float",
+      "is_primary_key": false,
+      "is_partition_key": false,
+      "is_sorting_key": false,
+      "is_sample_key": true,
+      "is_nullable": false,
+      "compression_codec": "Gorilla"
+    }
+  },
+  "additionalProperties": true,
+  "table": {
+    "database": "tmpdb",
+    "tableType": "TABLE",
+    "tableEngine": "MergeTree"
+  }
+}
