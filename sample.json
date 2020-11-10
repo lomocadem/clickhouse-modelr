@@ -38,15 +38,14 @@
       "function": "xxHash64"
     },
     "create_date": {
-      "type": "DateTime",
+      "type": "DateTime('Europe/Moscow')",
       "is_primary_key": false,
       "is_partition_key": true,
       "is_sorting_key": false,
       "is_sample_key": false,
       "is_nullable": false,
       "compression_codec": "DoubleDelta",
-      "function": "toYYYYMM",
-      "time_zone": "Europe/Moscow"
+      "function": "toYYYYMM"
     },
     "salary": {
       "type": "Float64",

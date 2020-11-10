@@ -1,3 +1,25 @@
+# Construct table: db.table
+class Table:
+    def __init__(self, table):
+        self.table = table
+
+    @classmethod
+    def constructTable(cls, database_name, table_name):
+        table = f"{database_name}.{table_name}"
+        return cls(table)
+
+
+# Construct engine:
+class Engine:
+    def __init__(self, engine):
+        self.engine = engine
+
+    @classmethod
+    def constructEngine(cls, engine_name):
+        engine = f"ENGINE={engine_name}()"
+        return cls(engine)
+
+
 # Construct columns: (col_name data_type codec(codec_engine))
 class Columns:
     def __init__(self, columns: str,
@@ -90,28 +112,6 @@ class Columns:
         sample_key_name = Columns.findSampleKey(columns_dict)
 
         return cls(columns_list, primary_key_name, partition_key_name, sorting_key_list, sample_key_name)
-
-
-# Construct table: db.table
-class Table:
-    def __init__(self, table):
-        self.table = table
-
-    @classmethod
-    def constructTable(cls, database_name, table_name):
-        table = f"{database_name}.{table_name}"
-        return cls(table)
-
-
-# Construct engine:
-class Engine:
-    def __init__(self, engine):
-        self.engine = engine
-
-    @classmethod
-    def constructEngine(cls, engine_name):
-        engine = f"ENGINE={engine_name}()"
-        return cls(engine)
 
 
 class PrimaryKey:
