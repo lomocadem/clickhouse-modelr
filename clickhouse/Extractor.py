@@ -28,74 +28,39 @@ class Extractor:
 
 # Construct columns: (col_name data_type codec(codec_engine))
 class Columns:
-    def __init__(self, columns):
+    def __init__(self, columns: str,
+                 primary_key: str,
+                 partition_keys: list,
+                 sorting_keys: list,
+                 sample_key: str):
         self.columns = columns
+        self.primary_key = primary_key
+        self.partition_keys = partition_keys
+        self.sorting_keys = sorting_keys
+        self.sample_key = sample_key
 
     @staticmethod
     def constructNullable(d_type, is_nullable):
-        if is_nullable:
-            data_type = f"Nullable({d_type})"
-        else:
-            data_type = d_type
-        return data_type
+        pass
 
     @staticmethod
-    def constructCodec(codec_name):
-        if isinstance(codec_name, str):
-            codec = ""
-        else:
-            codec = f"CODEC({codec_name})"
-        return codec
+    def constructCodec(column_dict: dict):
+        pass
 
     @staticmethod
     def constructTimezone(time_type, timezone):
-        if isinstance(timezone, str):
-            time_with_tz = time_type
-        else:
-            time_with_tz = f"{time_type}('{timezone}')"
-        return time_with_tz
+        pass
 
     @classmethod
     def constructColumnsDict(cls, columns_dict: dict):
         col_list = list()
-        for key, value in columns_dict.items():
-            for col_key, col_value in value.items():
-                if "compression_codec" in col_key:
-                    col_list.append(col_value)
-                else:
-                    pass
-        return cls(col_list)
-
-    @classmethod
-    def constructColumns(cls, columns_dict: dict):
-        # Convert column dict to dataframe
-        column_df = DataFrame.from_dict(columns_dict, orient='index',
-                                        columns=['type',
-                                                 'is_primary_key',
-                                                 'is_partition_key',
-                                                 'is_sorting_key',
-                                                 'is_sample_key',
-                                                 'is_nullable',
-                                                 'compression_codec',
-                                                 'function',
-                                                 'time_zone'])
-        # Rename column_name
-        column_with_name = column_df.reset_index().rename(columns={'index': 'column_name'})
-
-        column_list = list()
-        t_list = list()
         # Construct columns DDL
-        for index, row in column_with_name.iterrows():
-            column_name = row['column_name']
-            codec = Columns.constructCodec(row['compression_codec'])
-            time = Columns.constructTimezone(row['type'], row['time_zone'])
-            data_type = Columns.constructNullable(row['type'], row['is_nullable'])
-            each = f"{column_name} {data_type} {codec}"
-            # each = f"{row['column_name']} {row['type']} CODEC({row['compression_codec']})"
-            column_list.append(each)
-            t = row['compression_codec']
-            t_list.append(t)
-        return cls(t_list)
+        for key, value in columns_dict.items():
+            column_name = key
+            for col_key, col_value in value.items():
+                pass
+
+        return cls(col_list)
 
 
 # Construct table: db.table
@@ -131,22 +96,23 @@ class PrimaryKey:
 
 
 class PartitionKey:
-    def __init__(self, partition_key):
+    def __init__(self, partition_key: str):
         self.partition_key = partition_key
 
     @classmethod
-    def constructPartitionKey(cls, partition_key):
-        partition_key = "PARTITION BY " + partition_key
+    def constructPartitionKey(cls, partition_keys: list):
+        joint_keys = ", ".join(partition_keys)
+        partition_key = f"PARTITION BY ({joint_keys})"
         return cls(partition_key)
 
 
 class SortingKey:
-    def __init__(self, sorting_key):
+    def __init__(self, sorting_key: str):
         self.sorting_key = sorting_key
 
     @classmethod
-    def constructSortingKey(cls, sorting_key_str):
-        sorting_key = "ORDER BY " + sorting_key_str
+    def constructSortingKey(cls, sorting_keys: list):
+        sorting_key = "ORDER BY " + sorting_keys
         return cls(sorting_key)
 
 
