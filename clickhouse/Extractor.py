@@ -56,6 +56,17 @@ class Columns:
         return time_with_tz
 
     @classmethod
+    def constructColumnsDict(cls, columns_dict: dict):
+        col_list = list()
+        for key, value in columns_dict.items():
+            for col_key, col_value in value.items():
+                if "compression_codec" in col_key:
+                    col_list.append(col_value)
+                else:
+                    pass
+        return cls(col_list)
+
+    @classmethod
     def constructColumns(cls, columns_dict: dict):
         # Convert column dict to dataframe
         column_df = DataFrame.from_dict(columns_dict, orient='index',
@@ -140,7 +151,8 @@ class SortingKey:
 
 
 a = Extractor.extractJson(json_schema_location)
-print(type(a.columns))
 
-b = Columns.constructColumns(a.columns)
+
+b = Columns.constructColumnsDict(a.columns)
 print(b.columns)
+print(type(b.columns))
