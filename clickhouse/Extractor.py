@@ -2,7 +2,7 @@ import json
 import numpy as np
 from pandas import DataFrame
 
-json_schema_location = r"C:/Users/calvin/PycharmProjects/clickhouse-modelr/sample.json"
+json_schema_location = r"C:/Users/lomocadem/PycharmProjects/clickhouse-modelr/sample.json"
 
 
 # Extract components from Json Schema
@@ -15,8 +15,8 @@ class Extractor:
         self.columns = columns
 
     @classmethod
-    def extractJson(cls, json_schema_location):
-        json_file = open(json_schema_location)
+    def extractJson(cls, schema_path):
+        json_file = open(schema_path)
         schema = json.load(json_file)
         database = schema['table']['database'].lower()
         table = schema['title'].lower()
@@ -40,27 +40,75 @@ class Columns:
         self.sample_key = sample_key
 
     @staticmethod
-    def constructNullable(d_type, is_nullable):
-        pass
+    def constructNullable(column_dict: dict):
+        if column_dict["is_nullable"]:
+            final_type = f"Nullable(" + column_dict["type"] + ")"
+        else:
+            final_type = column_dict["type"]
+        return final_type
 
     @staticmethod
     def constructCodec(column_dict: dict):
-        pass
+        try:
+            return "CODEC(" + column_dict["compression_codec"] + ")"
+        except:
+            pass
 
     @staticmethod
-    def constructTimezone(time_type, timezone):
-        pass
-
-    @classmethod
-    def constructColumnsDict(cls, columns_dict: dict):
-        col_list = list()
-        # Construct columns DDL
+    def findPrimaryKey(columns_dict: dict):
+        # Construct Primary key
         for key, value in columns_dict.items():
-            column_name = key
-            for col_key, col_value in value.items():
+            if value["is_primary_key"]:
+                return key
+            else:
                 pass
 
-        return cls(col_list)
+    @staticmethod
+    def findPartitionKey(columns_dict: dict):
+        # Construct Partition key
+        for key, value in columns_dict.items():
+            if value["is_partition_key"]:
+                return key
+            else:
+                pass
+
+    @staticmethod
+    def findSortingKey(columns_dict: dict):
+        sorting_key_list = list()
+        # Construct Sorting key
+        for key, value in columns_dict.items():
+            if value["is_sorting_key"]:
+                sorting_key_list.append(key)
+            else:
+                pass
+        return sorting_key_list
+
+    @staticmethod
+    def findSampleKey(columns_dict: dict):
+        # Construct Sample key
+        for key, value in columns_dict.items():
+            if value["is_sample_key"]:
+                return key
+            else:
+                pass
+
+    @classmethod
+    def constructColumns(cls, columns_dict: dict):
+        col_list = list()
+
+        # Construct columns list
+        for key, value in columns_dict.items():
+            col_name = key
+            col_data_type = Columns.constructNullable(value)
+            col_codec = Columns.constructCodec(value)
+            concat = f"{col_name} {col_data_type} {col_codec}"
+            col_list.append(concat)
+        primary_key_name = Columns.findPrimaryKey(columns_dict)
+        partition_key_name = Columns.findPartitionKey(columns_dict)
+        sorting_key_list = Columns.findSortingKey(columns_dict)
+        sample_key_name = Columns.findSampleKey(columns_dict)
+
+        return cls(col_list, primary_key_name, partition_key_name, sorting_key_list, sample_key_name)
 
 
 # Construct table: db.table
@@ -70,7 +118,7 @@ class Table:
 
     @classmethod
     def constructTable(cls, database_name, table_name):
-        table = database_name + "." + table_name
+        table = f"{database_name}.{table_name}"
         return cls(table)
 
 
@@ -81,7 +129,7 @@ class Engine:
 
     @classmethod
     def constructEngine(cls, engine_name):
-        engine = "ENGINE=" + engine_name + "()"
+        engine = f"ENGINE={engine_name}()"
         return cls(engine)
 
 
@@ -91,7 +139,7 @@ class PrimaryKey:
 
     @classmethod
     def constructPrimaryKey(cls, pkey_name):
-        primary_key = "PRIMARY KEY " + pkey_name
+        primary_key = f"PRIMARY KEY {pkey_name}"
         return cls(primary_key)
 
 
@@ -126,10 +174,11 @@ class SampleKey:
         return cls(concat)
 
 
-
 a = Extractor.extractJson(json_schema_location)
 
-
-b = Columns.constructColumnsDict(a.columns)
+b = Columns.constructColumns(a.columns)
 print(b.columns)
-print(type(b.columns))
+print(b.primary_key)
+print(b.partition_keys)
+print(b.sorting_keys)
+print(b.sample_key)
