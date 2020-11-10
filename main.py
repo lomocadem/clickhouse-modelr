@@ -1,4 +1,4 @@
-from clickhouse.Extractor import *
+from clickhouse.Extractor import Extractor
 from clickhouse.Constructor import *
 
 
