@@ -2,6 +2,7 @@
   <dictionary name="calvin">
     <words>
       <w>clickhouse</w>
+      <w>dataframe</w>
       <w>modelr</w>
     </words>
   </dictionary>

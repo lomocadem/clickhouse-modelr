@@ -49,7 +49,7 @@
       "time_zone": "Europe/Moscow"
     },
     "salary": {
-      "type": "Float",
+      "type": "Float64",
       "is_primary_key": false,
       "is_partition_key": false,
       "is_sorting_key": false,
