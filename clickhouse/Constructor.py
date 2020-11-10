@@ -64,23 +64,32 @@ class Columns:
             else:
                 pass
 
-    @classmethod
-    def constructColumns(cls, columns_dict: dict):
+    @staticmethod
+    def constructColumnsList(columns_dict: dict):
         col_list = list()
-
         # Construct columns list
         for key, value in columns_dict.items():
             col_name = key
             col_data_type = Columns.constructNullable(value)
             col_codec = Columns.constructCodec(value)
-            concat = f"{col_name} {col_data_type} {col_codec}"
+            if col_codec is None:
+                concat = f"{col_name} {col_data_type}"
+            else:
+                concat = f"{col_name} {col_data_type} {col_codec}"
             col_list.append(concat)
+        joint_keys = ",\n".join(col_list)
+        concat = f"({joint_keys})"
+        return concat
+
+    @classmethod
+    def constructColumns(cls, columns_dict: dict):
+        columns_list = Columns.constructColumnsList(columns_dict)
         primary_key_name = Columns.findPrimaryKey(columns_dict)
         partition_key_name = Columns.findPartitionKey(columns_dict)
         sorting_key_list = Columns.findSortingKey(columns_dict)
         sample_key_name = Columns.findSampleKey(columns_dict)
 
-        return cls(col_list, primary_key_name, partition_key_name, sorting_key_list, sample_key_name)
+        return cls(columns_list, primary_key_name, partition_key_name, sorting_key_list, sample_key_name)
 
 
 # Construct table: db.table
