@@ -30,12 +30,12 @@ class Extractor:
 class Columns:
     def __init__(self, columns: str,
                  primary_key: str,
-                 partition_keys: list,
+                 partition_key: str,
                  sorting_keys: list,
                  sample_key: str):
         self.columns = columns
         self.primary_key = primary_key
-        self.partition_keys = partition_keys
+        self.partition_keys = partition_key
         self.sorting_keys = sorting_keys
         self.sample_key = sample_key
 
@@ -100,10 +100,9 @@ class PartitionKey:
         self.partition_key = partition_key
 
     @classmethod
-    def constructPartitionKey(cls, partition_keys: list):
-        joint_keys = ", ".join(partition_keys)
-        partition_key = f"PARTITION BY ({joint_keys})"
-        return cls(partition_key)
+    def constructPartitionKey(cls, partition_key: str):
+        concat = f"PARTITION BY {partition_key}"
+        return cls(concat)
 
 
 class SortingKey:
@@ -112,8 +111,20 @@ class SortingKey:
 
     @classmethod
     def constructSortingKey(cls, sorting_keys: list):
-        sorting_key = "ORDER BY " + sorting_keys
-        return cls(sorting_key)
+        joint_keys = ", ".join(sorting_keys)
+        concat = f"ORDER BY ({joint_keys})"
+        return cls(concat)
+
+
+class SampleKey:
+    def __init__(self, sample_key: str):
+        self.sample_key = sample_key
+
+    @classmethod
+    def constructSampleKey(cls, sample_key: str):
+        concat = f"SAMPLE BY {sample_key}"
+        return cls(concat)
+
 
 
 a = Extractor.extractJson(json_schema_location)
