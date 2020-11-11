@@ -3,7 +3,7 @@ class Columns:
     def __init__(self, columns: str,
                  primary_key: str,
                  partition_key: str,
-                 sorting_keys: list,
+                 sorting_keys: str,
                  sample_key: str):
         self.columns = columns
         self.primary_key = primary_key
@@ -30,7 +30,7 @@ class Columns:
     def findPrimaryKey(columns_dict: dict):
         # Construct Primary key
         for key, value in columns_dict.items():
-            if value["is_primary_key"]:
+            if value["is_primary_key"] :
                 return key
             else:
                 pass
@@ -39,8 +39,10 @@ class Columns:
     def findPartitionKey(columns_dict: dict):
         # Construct Partition key
         for key, value in columns_dict.items():
-            if value["is_partition_key"]:
+            if value["is_partition_key"] and "function" not in value.keys():
                 return key
+            if value["is_partition_key"] and "function" in value.keys():
+                return value["function"] + "(" + key + ")"
             else:
                 pass
 
@@ -49,8 +51,10 @@ class Columns:
         sorting_key_list = list()
         # Construct Sorting key
         for key, value in columns_dict.items():
-            if value["is_sorting_key"]:
+            if value["is_sorting_key"] and "function" not in value.keys():
                 sorting_key_list.append(key)
+            if value["is_sorting_key"] and "function" in value.keys():
+                sorting_key_list.append(value["function"] + "(" + key + ")")
             else:
                 pass
         return sorting_key_list
