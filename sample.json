@@ -59,6 +59,7 @@
   },
   "additionalProperties": true,
   "table": {
+    "cluster": "cluster-0",
     "database": "tmpdb",
     "tableType": "TABLE",
     "tableEngine": "MergeTree"

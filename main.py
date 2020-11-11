@@ -1,4 +1,5 @@
 from clickhouse.Extractor import Extractor
+from clickhouse.Cluster import Cluster
 from clickhouse.Table import Table
 from clickhouse.Columns import Columns
 from clickhouse.Engine import Engine
@@ -16,17 +17,20 @@ a = Extractor.extractJson(json_schema_location)
 f = Table.constructTable(a.table_type, a.database, a.table)
 print(f.table)
 
+h = Cluster.constructCluster(a.cluster)
+print(h.cluster)
+
 b = Columns.constructColumns(a.columns)
 print(b.columns)
 
 e = Engine.constructEngine(a.table_engine)
 print(e.engine)
 
-h = PartitionKey.constructPartitionKey(b.partition_keys)
-print(h.partition_key)
-
 d = PrimaryKey.constructPrimaryKey(b.primary_key)
 print(d.primary_key)
+
+h = PartitionKey.constructPartitionKey(b.partition_keys)
+print(h.partition_key)
 
 c = SortingKey.constructSortingKey(b.sorting_keys)
 print(c.sorting_key)
